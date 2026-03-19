@@ -62,8 +62,9 @@ chown -R www-data:www-data storage bootstrap/cache\n\
 chmod -R 777 storage bootstrap/cache\n\
 # Generate application key if not set\n\
 php artisan key:generate --force\n\
-# Cache configuration\n\
-php artisan config:cache\n\
+# Clear any cached config\n\
+php artisan config:clear\n\
+php artisan route:clear\n\
 # Run migrations\n\
 php artisan migrate --force\n\
 # Start supervisor (artisan serve, scheduler, and queue)\n\

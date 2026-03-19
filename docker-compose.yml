@@ -14,6 +14,7 @@ services:
       MYSQL_PASSWORD: secret
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - task_management_network
     healthcheck:
@@ -36,6 +37,16 @@ services:
       timeout: 3s
       retries: 5
 
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: task_management_mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - task_management_network
+
   api:
     build:
       context: .
@@ -56,11 +67,18 @@ services:
       DB_PASSWORD: secret
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PASSWORD: null
+      REDIS_PASSWORD: ""
       QUEUE_CONNECTION: redis
       REDIS_QUEUE: task_management_queue
       REDIS_QUEUE_CONNECTION: default
       REDIS_QUEUE_RETRY_AFTER: 90
+      MAIL_MAILER: smtp
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_FROM_ADDRESS: "noreply@taskmanagement.local"
+      MAIL_FROM_NAME: "Task Management"
       APP_ENV: local
       APP_DEBUG: "true"
     depends_on:
@@ -68,12 +86,17 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      mailhog:
+        condition: service_started
     networks:
       - task_management_network
 
 networks:
   task_management_network:
     driver: bridge
+    ipam:
+        config:
+            - subnet: 192.168.124.0/24
 
 volumes:
   mysql_data:
