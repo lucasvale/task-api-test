@@ -9,6 +9,31 @@
 	"item": [
 		{
 			"name": "POST localhost:8000/api/auth/login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.json().data.token !== undefined && pm.response.json().data.token !== null) {",
+							"    pm.environment.set(\"TOKEN\", 'Bearer ' + pm.response.json().data.token);",
+							"}",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -23,7 +48,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"email\": \"test@test.com\",\n    \"password\": \"123\"\n}",
+					"raw": "{\n    \"email\": \"test@test.com\",\n    \"password\": \"12345\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -31,11 +56,10 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8000/api/auth/login",
+					"raw": "{{HOST}}/api/auth/login",
 					"host": [
-						"localhost"
+						"{{HOST}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"auth",
@@ -55,7 +79,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer ",
+						"value": "Bearer {{TOKEN}}",
 						"type": "text"
 					},
 					{
@@ -66,7 +90,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"test\",\n    \"email\": \"test@test.com\",\n    \"password\": \"12345\"\n}",
+					"raw": "{\n    \"name\": \"test\",\n    \"email\": \"test2@test.com\",\n    \"password\": \"12345\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -74,11 +98,10 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8000/api/users",
+					"raw": "{{HOST}}/api/users",
 					"host": [
-						"localhost"
+						"{{HOST}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"users"
@@ -97,7 +120,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer 3|FmIvwbccI89QgtisPSeQ4T8bRXUTuFhENWffrbYS9108e273",
+						"value": "Bearer {{TOKEN}}",
 						"type": "text"
 					},
 					{
@@ -107,11 +130,10 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8000/api/users",
+					"raw": "{{HOST}}/api/users",
 					"host": [
-						"localhost"
+						"{{HOST}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"users"
@@ -130,7 +152,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer 3|FmIvwbccI89QgtisPSeQ4T8bRXUTuFhENWffrbYS9108e273",
+						"value": "{{TOKEN}}",
 						"type": "text"
 					},
 					{
@@ -140,11 +162,10 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8000/api/auth/me",
+					"raw": "{{HOST}}/api/auth/me",
 					"host": [
-						"localhost"
+						"{{HOST}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"auth",
@@ -164,7 +185,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer 3|FmIvwbccI89QgtisPSeQ4T8bRXUTuFhENWffrbYS9108e273",
+						"value": "Bearer {{TOKEN}}",
 						"type": "text"
 					},
 					{
@@ -174,11 +195,10 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8000/api/projects",
+					"raw": "{{HOST}}/api/projects",
 					"host": [
-						"localhost"
+						"{{HOST}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"projects"
@@ -197,7 +217,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer 3|FmIvwbccI89QgtisPSeQ4T8bRXUTuFhENWffrbYS9108e273",
+						"value": "Bearer {{TOKEN}}",
 						"type": "text"
 					},
 					{
@@ -207,11 +227,10 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8000/api/projects/73",
+					"raw": "{{HOST}}/api/projects/73",
 					"host": [
-						"localhost"
+						"{{HOST}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"projects",
@@ -231,7 +250,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer 3|FmIvwbccI89QgtisPSeQ4T8bRXUTuFhENWffrbYS9108e273",
+						"value": "Bearer {{TOKEN}}",
 						"type": "text"
 					},
 					{
@@ -250,11 +269,10 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8000/api/projects",
+					"raw": "{{HOST}}/api/projects",
 					"host": [
-						"localhost"
+						"{{HOST}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"projects"
@@ -273,7 +291,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer 3|FmIvwbccI89QgtisPSeQ4T8bRXUTuFhENWffrbYS9108e273",
+						"value": "Bearer {{TOKEN}}",
 						"type": "text"
 					},
 					{
@@ -283,11 +301,10 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8000/api/projects/73/tasks",
+					"raw": "{{HOST}}/api/projects/73/tasks",
 					"host": [
-						"localhost"
+						"{{HOST}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"projects",
@@ -299,7 +316,7 @@
 			"response": []
 		},
 		{
-			"name": "POST localhost:8000/api/projects/:id/tasks Copy",
+			"name": "POST localhost:8000/api/projects/:id/tasks",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -308,7 +325,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer 3|FmIvwbccI89QgtisPSeQ4T8bRXUTuFhENWffrbYS9108e273",
+						"value": "Bearer {{TOKEN}}",
 						"type": "text"
 					},
 					{
@@ -327,11 +344,10 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8000/api/projects/73/tasks",
+					"raw": "{{HOST}}/api/projects/73/tasks",
 					"host": [
-						"localhost"
+						"{{HOST}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"projects",
@@ -352,7 +368,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer 3|FmIvwbccI89QgtisPSeQ4T8bRXUTuFhENWffrbYS9108e273",
+						"value": "Bearer {{TOKEN}}",
 						"type": "text"
 					},
 					{
@@ -362,11 +378,10 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8000/api/notifications",
+					"raw": "{{HOST}}/api/notifications",
 					"host": [
-						"localhost"
+						"{{HOST}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"notifications"
