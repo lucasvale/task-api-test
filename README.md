@@ -1,10 +1,102 @@
-# Collaborative Task Management API
+# Problem
+
+## Senior PHP Backend Developer – Coding Assessment
+
+Thank you for taking the time to complete this assessment.  
+The goal is to demonstrate how you approach architecture, testing, and backend engineering best practices.
+
+---
+
+### 📖 Project: Collaborative Task Management API
+
+#### Objective
+Build a REST API for managing projects, tasks, comments, and notifications.  
+We value **clean architecture, thoughtful design, and code quality** over speed or feature quantity.
+
+---
+
+### ✅ Requirements
+
+#### Core Features
+- **Authentication**: User registration & login (JWT or Laravel Sanctum).
+- **Projects**: CRUD operations. Each project belongs to a user.
+- **Tasks**:
+    - CRUD operations.
+    - Fields: `title, description, status (todo/in-progress/done), due_date`.
+    - Filtering: by status, due date, full-text search.
+    - Pagination for listing.
+- **Comments**: CRUD operations. Each comment belongs to a task.
+- **Notifications**:
+    - Triggered when a task is assigned or updated.
+    - Delivered asynchronously (e.g., queue).
+    - Endpoint for fetching unseen notifications.
+
+#### Non-Functional
+- Use a layered architecture (controllers, services, repositories, domain models).
+- Apply at least two meaningful design patterns (e.g., Repository, Strategy, Observer).
+- Database migrations must be included.
+- Cache task listings (e.g., Redis).
+- Add rate limiting for sensitive endpoints.
+- Standardized error handling and responses.
+
+#### Testing
+- Unit tests for core services and repositories.
+- Integration tests for API endpoints.
+- Minimum **70% test coverage**.
+
+#### DevOps
+- `Dockerfile` + `docker-compose.yml` for local setup.
+- CI pipeline runs automatically (tests, static analysis, linting, security).
+- Compatible with **PHP 8.2+**.
+
+#### Documentation
+- Update this `README.md` to include:
+    - Setup instructions.
+    - Example API requests (curl/Postman).
+    - Explanation of your architectural decisions and trade-offs.
+    - Which design patterns you applied, and why.
+
+---
+
+### 🎯 Acceptance Criteria
+
+Your submission will be evaluated on:
+
+- **Architecture & Patterns**: Separation of concerns, justified design patterns.
+- **Code Quality & Standards**: PSR-12 compliance, maintainability.
+- **Feature Completeness**: Requirements implemented.
+- **Testing**: Coverage, meaningful cases, edge-case handling.
+- **Documentation**: Clear and professional.
+- **DevOps**: CI/CD awareness, Docker setup.
+
+---
+
+### 📝 Commit Guidelines
+
+We value not only the final code but also how you structure your work.  
+Please use **meaningful, structured commit messages** throughout your development.
+
+- Follow [Conventional Commits](https://www.conventionalcommits.org/) style when possible:
+    - `feat:` – for new features
+    - `fix:` – for bug fixes
+    - `chore:` – for setup, configuration, or maintenance
+    - `test:` – for adding or improving tests
+    - `docs:` – for documentation changes
+
+- Examples:
+    - `chore: initial commit (Laravel project setup)`
+    - `feat: add task CRUD endpoints`
+    - `fix: correct due date validation logic`
+
+
+# Solution 
+## Collaborative Task Management API
 
 REST API for managing projects, tasks, comments, and notifications built with **Laravel 12**, **PHP 8.4**, and **Laravel Sanctum**.
 
 ---
 
-## Table of Contents
+### Table of Contents
 
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
@@ -18,7 +110,7 @@ REST API for managing projects, tasks, comments, and notifications built with **
 
 ---
 
-## Tech Stack
+### Tech Stack
 
 | Component       | Technology              |
 |-----------------|-------------------------|
@@ -34,7 +126,7 @@ REST API for managing projects, tasks, comments, and notifications built with **
 
 ---
 
-## Architecture
+### Architecture
 
 The project follows a **DDD-inspired layered architecture** with clear separation of concerns:
 
@@ -91,36 +183,36 @@ app/
 
 ---
 
-## Design Patterns
+### Design Patterns
 
-### 1. Repository Pattern
+#### 1. Repository Pattern
 All database access is abstracted behind interfaces (`UserRepositoryInterface`, `TaskRepositoryInterface`, etc.) with Eloquent implementations in the Infrastructure layer. This decouples business logic from the ORM, making services testable with mocks.
 
-### 2. Observer Pattern (Notifications)
+#### 2. Observer Pattern (Notifications)
 When a task is created or updated with an `assigned_to` user, the `TaskService` dispatches queued notifications (`TaskCreated`, `TaskUpdated`) via Laravel's notification system. These are processed asynchronously through Redis queues and deliver both email and database notifications.
 
-### 3. DTO Pattern (Data Transfer Objects)
+#### 3. DTO Pattern (Data Transfer Objects)
 All request data flows through Spatie Laravel Data DTOs (`CreateTaskRequestDto`, `TaskFiltersDto`, etc.), providing automatic validation, type safety, and a clean contract between layers.
 
-### 4. Entity Pattern
+#### 4. Entity Pattern
 Domain entities (`TaskEntity`, `ProjectEntity`, etc.) encapsulate business state with factory methods (`fromCreateDto()`, `fromModel()`) and mutation methods (`applyUpdate()`), keeping business logic out of Eloquent models.
 
 ---
 
-## Setup Instructions
+### Setup Instructions
 
-### Prerequisites
+#### Prerequisites
 
 - Docker & Docker Compose
 
-### 1. Clone the repository
+#### 1. Clone the repository
 
 ```bash
 git clone <repository-url>
 cd task-api-test
 ```
 
-### 2. Start the containers
+#### 2. Start the containers
 
 ```bash
 docker-compose up -d --build
@@ -135,7 +227,7 @@ This starts four services:
 | **redis**  | 6379  | Redis 7 (cache/queue)  |
 | **mailhog**| 8025  | MailHog web UI (email) |
 
-### 3. Verify the setup
+#### 3. Verify the setup
 
 ```bash
 # Check all containers are running
@@ -150,13 +242,13 @@ The startup script automatically:
 - Runs database migrations
 - Starts the web server, queue worker, and scheduler via Supervisor
 
-### 4. Access MailHog
+#### 4. Access MailHog
 
 Open [http://localhost:8025](http://localhost:8025) to view emails sent by the application (task assignment notifications).
 
 ---
 
-## Running Tests
+### Running Tests
 
 Tests run inside the Docker container against a real MySQL database:
 
@@ -174,7 +266,7 @@ docker exec task_management php artisan test --testsuite=Feature
 docker exec task_management php artisan test --coverage
 ```
 
-### Test Summary
+#### Test Summary
 
 | Suite     | Description                                  |
 |-----------|----------------------------------------------|
@@ -191,9 +283,9 @@ docker exec task_management php artisan test --coverage
 
 ---
 
-## API Endpoints
+### API Endpoints
 
-### Authentication
+#### Authentication
 
 | Method | Endpoint           | Auth | Rate Limit       | Description          |
 |--------|--------------------|------|------------------|----------------------|
@@ -201,7 +293,7 @@ docker exec task_management php artisan test --coverage
 | POST   | `/api/auth/logout` | Yes  | 60/min per user  | Revoke current token |
 | GET    | `/api/auth/me`     | Yes  | 60/min per user  | Get authenticated user |
 
-### Users
+#### Users
 
 | Method | Endpoint         | Auth | Rate Limit       | Description        |
 |--------|------------------|------|------------------|--------------------|
@@ -211,7 +303,7 @@ docker exec task_management php artisan test --coverage
 | PUT    | `/api/users/{id}` | Yes | 60/min per user  | Update user        |
 | DELETE | `/api/users/{id}` | Yes | 60/min per user  | Delete user        |
 
-### Projects
+#### Projects
 
 | Method | Endpoint              | Auth | Description              |
 |--------|-----------------------|------|--------------------------|
@@ -221,7 +313,7 @@ docker exec task_management php artisan test --coverage
 | PUT    | `/api/projects/{id}`  | Yes  | Update project (own only)|
 | DELETE | `/api/projects/{id}`  | Yes  | Delete project (own only)|
 
-### Tasks
+#### Tasks
 
 | Method | Endpoint                                | Auth | Description                    |
 |--------|-----------------------------------------|------|--------------------------------|
@@ -237,7 +329,7 @@ docker exec task_management php artisan test --coverage
 - `due_date_to` — Filter tasks with due date <= value
 - `search` — Full-text search on title and description
 
-### Comments
+#### Comments
 
 | Method | Endpoint                                | Auth | Description                      |
 |--------|-----------------------------------------|------|----------------------------------|
@@ -263,9 +355,9 @@ docker exec task_management php artisan test --coverage
 
 ---
 
-## API Examples (curl)
+### API Examples (curl)
 
-### Register a user
+#### Register a user
 
 ```bash
 curl -X POST http://localhost:8000/api/users \
@@ -277,7 +369,7 @@ curl -X POST http://localhost:8000/api/users \
   }'
 ```
 
-### Login
+#### Login
 
 ```bash
 curl -X POST http://localhost:8000/api/auth/login \
@@ -299,7 +391,7 @@ Response:
 }
 ```
 
-### Create a project
+#### Create a project
 
 ```bash
 curl -X POST http://localhost:8000/api/projects \
@@ -311,7 +403,7 @@ curl -X POST http://localhost:8000/api/projects \
   }'
 ```
 
-### Create a task (with assignee notification)
+#### Create a task (with assignee notification)
 
 ```bash
 curl -X POST http://localhost:8000/api/projects/1/tasks \
@@ -328,7 +420,7 @@ curl -X POST http://localhost:8000/api/projects/1/tasks \
 
 > When `assigned_to` is set, the assigned user receives an email notification (viewable in MailHog at http://localhost:8025) and a database notification.
 
-### List tasks with filters
+#### List tasks with filters
 
 ```bash
 # Filter by status
@@ -344,7 +436,7 @@ curl -X GET "http://localhost:8000/api/projects/1/tasks?search=implement" \
   -H "Authorization: Bearer {token}"
 ```
 
-### Add a comment to a task
+#### Add a comment to a task
 
 ```bash
 curl -X POST http://localhost:8000/api/tasks/1/comments \
@@ -353,26 +445,26 @@ curl -X POST http://localhost:8000/api/tasks/1/comments \
   -d '{"body": "This looks good, proceeding with implementation."}'
 ```
 
-### List notifications
+#### List notifications
 
 ```bash
-# All notifications
+## All notifications
 curl -X GET http://localhost:8000/api/notifications \
   -H "Authorization: Bearer {token}"
 
-# Only unread
+## Only unread
 curl -X GET "http://localhost:8000/api/notifications?read=false" \
   -H "Authorization: Bearer {token}"
 ```
 
-### Mark notification as read
+#### Mark notification as read
 
 ```bash
 curl -X PATCH http://localhost:8000/api/notifications/{id}/read \
   -H "Authorization: Bearer {token}"
 ```
 
-### Mark all notifications as read
+#### Mark all notifications as read
 
 ```bash
 curl -X PATCH http://localhost:8000/api/notifications/read-all \
@@ -381,9 +473,9 @@ curl -X PATCH http://localhost:8000/api/notifications/read-all \
 
 ---
 
-## Features
+### Features
 
-### Implemented
+#### Implemented
 
 - **Authentication** — Registration and login via Laravel Sanctum with token-based auth
 - **Projects** — Full CRUD with ownership enforcement (users can only access their own projects)
@@ -398,7 +490,7 @@ curl -X PATCH http://localhost:8000/api/notifications/read-all \
 - **Validation** — DTO-level validation via Spatie Laravel Data (unique email, required fields)
 - **Docker** — Full containerized setup with MySQL, Redis, MailHog, Supervisor (web server + queue worker + scheduler)
 
-### Testing
+#### Testing
 
 - **Unit Tests** — Services tested with mocked repositories; repositories tested with RefreshDatabase against real MySQL
 - **Integration Tests** — Full API endpoint tests covering auth, CRUD, ownership, access control, and edge cases
@@ -406,15 +498,15 @@ curl -X PATCH http://localhost:8000/api/notifications/read-all \
 
 ---
 
-## Trade-offs & Future Improvements
+### Trade-offs & Future Improvements
 
-### Trade-offs Made
+#### Trade-offs Made
 
 - **`artisan serve` vs Nginx/Apache** — Used PHP's built-in server via Supervisor for simplicity. In production, use Nginx + PHP-FPM.
 - **No pagination on task listings** — Task listings are cached and returned as full arrays. Pagination was not yet implemented but would be a straightforward addition using Laravel's paginator.
 - **Entities separate from Models** — Adds a mapping layer between Eloquent and domain logic. This is intentional to keep business rules framework-agnostic, but adds verbosity.
 
-### With More Time
+#### With More Time
 
 - **Pagination** — Add cursor-based pagination for task and comment listings
 - **CI/CD Pipeline** — GitHub Actions workflow for automated tests, PHPStan static analysis, PHP CS Fixer linting, and security audits
@@ -425,3 +517,4 @@ curl -X PATCH http://localhost:8000/api/notifications/read-all \
 - **Event Sourcing** — Replace direct notification dispatch with domain events for better decoupling
 - **Database Indexes** — Add composite indexes for frequently filtered queries
 - **Health Check Endpoint** — Expand `/up` to verify MySQL and Redis connectivity
+#
